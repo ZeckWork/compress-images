@@ -17,6 +17,8 @@ async function findImages() {
     }
   })
 
+  core.debug(`diff files: ${listFiles}`)
+
   return JSON.parse(listFiles.data.toString())
 }
 
