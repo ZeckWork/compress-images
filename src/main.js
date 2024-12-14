@@ -1,5 +1,24 @@
 const core = require('@actions/core')
 const { wait } = require('./wait')
+const octokit = require('./octokit')
+const event = require('./event')
+
+async function findImages() {
+  const pull_number = event.number
+  const repo = event.repository.name
+  const owner = event.repository.owner.login
+
+  const listFiles = await octokit.rest.pulls.listFiles({
+    owner,
+    repo,
+    pull_number,
+    mediaType: {
+      format: 'text'
+    }
+  })
+
+  return JSON.parse(listFiles.data.toString())
+}
 
 /**
  * The main function for the action.
@@ -11,6 +30,8 @@ async function run() {
 
     // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
     core.debug(`Waiting ${ms} milliseconds ...`)
+
+    core.debug(`${await findImages()}`)
 
     // Log the current timestamp, wait, then log the new timestamp
     core.debug(new Date().toTimeString())
