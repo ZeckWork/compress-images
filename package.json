@@ -1,8 +1,8 @@
 {
-  "name": "javascript-action",
-  "description": "GitHub Actions JavaScript Template",
-  "version": "0.0.0",
-  "author": "",
+  "name": "compress-images",
+  "description": "GitHub Actions for compress images",
+  "version": "1.0.0",
+  "author": "me@zeck.work",
   "private": true,
   "homepage": "https://github.com/actions/javascript-action#readme",
   "repository": {
@@ -15,7 +15,9 @@
   "keywords": [
     "GitHub",
     "Actions",
-    "JavaScript"
+    "JavaScript",
+    "compress",
+    "images"
   ],
   "exports": {
     ".": "./dist/index.js"
@@ -64,7 +66,8 @@
     ]
   },
   "dependencies": {
-    "@actions/core": "^1.11.1"
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
