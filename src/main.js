@@ -12,6 +12,8 @@ async function run() {
   try {
     const { optimisedImages } = await compress()
 
+    core.debug('optimisedImages: ', `${JSON.stringify(optimisedImages)}`)
+
     const baseTree = await requestLastCommitInTree()
     let blobs = []
 
@@ -38,8 +40,6 @@ async function run() {
 
     // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
     // core.debug(`Waiting ${ms} milliseconds ...`)
-
-    core.debug('diff files', `${optimisedImages}`)
 
     // Log the current timestamp, wait, then log the new timestamp
     core.debug(new Date().toTimeString())
