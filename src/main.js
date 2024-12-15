@@ -34,12 +34,12 @@ async function run() {
 
     await requestUpdateRef(commit.sha)
 
-    const ms = core.getInput('milliseconds', { required: true })
+    // const ms = core.getInput('milliseconds', { required: true })
 
     // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    // core.debug(`Waiting ${ms} milliseconds ...`)
 
-    core.setOutput('diff files', `${optimisedImages}`)
+    core.debug('diff files', `${optimisedImages}`)
 
     // Log the current timestamp, wait, then log the new timestamp
     core.debug(new Date().toTimeString())
