@@ -1,26 +1,8 @@
 const core = require('@actions/core')
 const { wait } = require('./wait')
-const octokit = require('./octokit')
-const event = require('./event')
+const compress = require('./compress').default
+const { requestCommitChanges, requestLastCommitInTree, requestTree, requestCreateBlob, requestUpdateRef } = require('./github').default
 
-async function findImages() {
-  const pull_number = event.number
-  const repo = event.repository.name
-  const owner = event.repository.owner.login
-
-  const listFiles = await octokit.rest.pulls.listFiles({
-    owner,
-    repo,
-    pull_number,
-    mediaType: {
-      format: 'text'
-    }
-  })
-
-  core.debug(`diff files: ${listFiles}`)
-
-  return JSON.parse(listFiles.data.toString())
-}
 
 /**
  * The main function for the action.
@@ -28,12 +10,36 @@ async function findImages() {
  */
 async function run() {
   try {
+    const { optimisedImages } = await compress()
+
+    const baseTree = await requestLastCommitInTree()
+    let blobs = []
+
+    for (var i = 0; i < optimisedImages.length; i++) {
+      const image = await requestCreateBlob(optimisedImages[i])
+      blobs.push(image)
+      core.info(image)
+    }
+
+    if (optimisedImages.length == 0) {
+      core.info('No optmized images')
+      return
+    }
+
+    const tree = await requestTree(baseTree, blobs)
+
+    const commit = await requestCommitChanges('refactor: imagens otimizadas.', tree)
+
+    core.debug(JSON.stringify(commit))
+
+    await requestUpdateRef(commit.sha)
+
     const ms = core.getInput('milliseconds', { required: true })
 
     // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
     core.debug(`Waiting ${ms} milliseconds ...`)
 
-    core.setOutput('diff files', `${await findImages()}`)
+    core.setOutput('diff files', `${optimisedImages}`)
 
     // Log the current timestamp, wait, then log the new timestamp
     core.debug(new Date().toTimeString())

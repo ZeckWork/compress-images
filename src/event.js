@@ -1,7 +1,6 @@
-const { readFileSync } = require('fs');
-
-const GITHUB_EVENT_PATH = process.env['GITHUB_EVENT_PATH']
+import { readFileSync } from 'fs'
+import { GITHUB_EVENT_PATH } from './constants'
 
 const buffer = readFileSync(GITHUB_EVENT_PATH)
 
-module.exports = JSON.parse(buffer.toString)
+export default JSON.parse(buffer.toString())

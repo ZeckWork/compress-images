@@ -8,6 +8,26 @@ inputs:
     description: 'Your input description here'
     required: true
     default: '1000'
+  jpegQuality:
+    description: 'Quality of JPEG images'
+    required: false
+    default: 80
+  jpegProgressive:
+    description: 'Quality of JPEG images'
+    required: false
+    default: 80
+  pngQuality:
+    description: 'Quality of PNG images'
+    required: false
+    default: 80
+  webpQuality:
+    description: 'Quality of WEBP images'
+    required: false
+    default: 80
+  compressOnly:
+    description: 'Only compress images'
+    required: false
+    default: true
 
 # Define your outputs here.
 outputs:
