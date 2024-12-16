@@ -1,6 +1,6 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'compress-diff-images-on-pr'
+description: 'Compress diff images on your Pull Request'
+author: 'Ezequiel Lima <me@zeck.work>'
 
 # Define your inputs here.
 inputs:
