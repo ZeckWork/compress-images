@@ -4,6 +4,8 @@ author: 'Your name or organization here'
 
 # Define your inputs here.
 inputs:
+  github_token:
+    required: true
   jpegQuality:
     description: 'Quality of JPEG images'
     required: false

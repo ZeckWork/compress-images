@@ -1,5 +1,6 @@
+const core = require('@actions/core')
 const { getOctokit } = require("@actions/github");
 
-const GITHUB_TOKEN = process.env['INPUT_GITHUBTOKEN'] || process.env['GITHUB_TOKEN']
+const GITHUB_TOKEN = core.getInput('github_token')
 
 module.exports = getOctokit(GITHUB_TOKEN)
