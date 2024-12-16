@@ -1,7 +1,14 @@
 const core = require('@actions/core')
 const { wait } = require('./wait')
 const compress = require('./compress').default
-const { requestCommitChanges, requestLastCommitInTree, requestTree, requestCreateBlob, requestUpdateRef, requestComment } = require('./github').default
+const {
+  requestCommitChanges,
+  requestLastCommitInTree,
+  requestTree,
+  requestCreateBlob,
+  requestUpdateRef,
+  requestComment
+} = require('./github').default
 const generateMarkdownReport = require('./template')
 
 /**
@@ -31,7 +38,10 @@ async function run() {
 
     const tree = await requestTree(baseTree, blobs)
 
-    const commit = await requestCommitChanges('refactor: imagens otimizadas.', tree)
+    const commit = await requestCommitChanges(
+      'refactor: imagens otimizadas.',
+      tree
+    )
 
     core.debug(JSON.stringify(commit))
 
