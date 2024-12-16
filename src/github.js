@@ -96,13 +96,25 @@ async function requestCommitChanges(message, tree) {
 async function requestUpdateRef(sha) {
     const repo = repository.name
     const owner = repository.owner.login
-    const ref = pull_request.head.sha
+    const ref = pull_request.head.ref
 
     await rest.git.updateRef({
         owner,
         repo,
-        ref: `ref/heads/test10`,
+        ref,
         sha
+    })
+}
+
+async function requestComment(body) {
+    const repo = repository.name
+    const owner = repository.owner.login
+
+    rest.issues.createComment({
+        owner,
+        repo,
+        issue_number: number,
+        body
     })
 }
 
@@ -112,5 +124,6 @@ export default {
     requestCreateBlob,
     requestTree,
     requestCommitChanges,
-    requestUpdateRef
+    requestUpdateRef,
+    requestComment
 }
