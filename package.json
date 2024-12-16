@@ -68,7 +68,10 @@
   "dependencies": {
     "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.0",
+    "crypto": "^1.0.1",
+    "ejs": "^3.1.10",
     "glob": "^11.0.0",
+    "humanize": "^0.0.9",
     "sharp": "^0.33.5"
   },
   "devDependencies": {

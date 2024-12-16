@@ -1,8 +1,8 @@
 const core = require('@actions/core')
 const { wait } = require('./wait')
 const compress = require('./compress').default
-const { requestCommitChanges, requestLastCommitInTree, requestTree, requestCreateBlob, requestUpdateRef } = require('./github').default
-
+const { requestCommitChanges, requestLastCommitInTree, requestTree, requestCreateBlob, requestUpdateRef, requestComment } = require('./github').default
+const generateMarkdownReport = require('./template')
 
 /**
  * The main function for the action.
@@ -10,7 +10,8 @@ const { requestCommitChanges, requestLastCommitInTree, requestTree, requestCreat
  */
 async function run() {
   try {
-    const { optimisedImages } = await compress()
+    const images = await compress()
+    const { optimisedImages } = images
 
     core.debug('optimisedImages: ', `${JSON.stringify(optimisedImages)}`)
 
@@ -36,18 +37,7 @@ async function run() {
 
     await requestUpdateRef(commit.sha)
 
-    // const ms = core.getInput('milliseconds', { required: true })
-
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    // core.debug(`Waiting ${ms} milliseconds ...`)
-
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+    await requestComment(await generateMarkdownReport(images))
   } catch (error) {
     // Fail the workflow run if an error occurs
     core.setFailed(error.message)
