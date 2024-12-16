@@ -4,10 +4,6 @@ author: 'Your name or organization here'
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
-    required: true
-    default: '1000'
   jpegQuality:
     description: 'Quality of JPEG images'
     required: false
