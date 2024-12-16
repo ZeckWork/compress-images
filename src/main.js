@@ -1,5 +1,8 @@
 const core = require('@actions/core')
 const { wait } = require('./wait')
+const compress = require('./compress').default
+const { requestCommitChanges, requestLastCommitInTree, requestTree, requestCreateBlob, requestUpdateRef, requestComment } = require('./github').default
+const generateMarkdownReport = require('./template')
 
 /**
  * The main function for the action.
@@ -7,18 +10,34 @@ const { wait } = require('./wait')
  */
 async function run() {
   try {
-    const ms = core.getInput('milliseconds', { required: true })
+    const images = await compress()
+    const { optimisedImages } = images
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    core.debug('optimisedImages: ', `${JSON.stringify(optimisedImages)}`)
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const baseTree = await requestLastCommitInTree()
+    let blobs = []
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+    for (var i = 0; i < optimisedImages.length; i++) {
+      const image = await requestCreateBlob(optimisedImages[i])
+      blobs.push(image)
+      core.info(image)
+    }
+
+    if (optimisedImages.length == 0) {
+      core.info('No optmized images')
+      return
+    }
+
+    const tree = await requestTree(baseTree, blobs)
+
+    const commit = await requestCommitChanges('refactor: imagens otimizadas.', tree)
+
+    core.debug(JSON.stringify(commit))
+
+    await requestUpdateRef(commit.sha)
+
+    await requestComment(await generateMarkdownReport(images))
   } catch (error) {
     // Fail the workflow run if an error occurs
     core.setFailed(error.message)
