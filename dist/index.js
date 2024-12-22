@@ -35881,7 +35881,7 @@ function wrappy (fn, cb) {
 const util = __nccwpck_require__(9023);
 const core = __nccwpck_require__(7484);
 const { globSync } = __nccwpck_require__(1363);
-const { requestDiffFiles } = (__nccwpck_require__(6474)["default"]);
+const { requestDiffFiles } = __nccwpck_require__(6474);
 const sharp = __nccwpck_require__(3491);
 const { extname } = __nccwpck_require__(6928);
 const { statSync, writeFileSync } = __nccwpck_require__(9896);
