@@ -72,7 +72,7 @@
     "ejs": "^3.1.10",
     "glob": "^11.0.0",
     "humanize": "^0.0.9",
-    "sharp": "0.24.0"
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
