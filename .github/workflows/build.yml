@@ -37,7 +37,7 @@ jobs:
     - name: Build action
       run: |
         npm install
-        npx @vercel/ncc build src/index.js -o dist
+        npm run bundle
 
     - name: Configure Git for Push
       run: |
