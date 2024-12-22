@@ -20,7 +20,7 @@ async function requestDiffFiles() {
   })
 
   return response.data
-    .filter(file => file.status != 'removed')
+    .filter(file => file.status !== 'removed')
     .map(file => `${REPO_DIRECTORY}/**/${file.filename.split('/').slice(-1)}`)
 }
 

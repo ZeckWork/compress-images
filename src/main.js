@@ -23,15 +23,15 @@ async function run() {
     core.debug('optimisedImages: ', `${JSON.stringify(optimisedImages)}`)
 
     const baseTree = await requestLastCommitInTree()
-    let blobs = []
+    const blobs = []
 
-    for (var i = 0; i < optimisedImages.length; i++) {
+    for (let i = 0; i < optimisedImages.length; i++) {
       const image = await requestCreateBlob(optimisedImages[i])
       blobs.push(image)
       core.info(image)
     }
 
-    if (optimisedImages.length == 0) {
+    if (optimisedImages.length === 0) {
       core.info('No optmized images')
       return
     }
