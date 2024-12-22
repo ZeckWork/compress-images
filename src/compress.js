@@ -33,8 +33,8 @@ async function compress() {
     dot: true
   })
 
-  let optimisedImages = []
-  let unoptimisedImages = []
+  const optimisedImages = []
+  const unoptimisedImages = []
 
   for (const file of files) {
     try {

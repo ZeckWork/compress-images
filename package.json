@@ -10,7 +10,7 @@
   "cpu": [
     "x64"
   ],
-  "homepage": "https://github.com/actions/javascript-action#readme",
+  "homepage": "",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/actions/javascript-action.git"
