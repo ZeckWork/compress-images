@@ -35876,66 +35876,62 @@ function wrappy (fn, cb) {
 /***/ }),
 
 /***/ 5629:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(9023);
-/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(util__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var sharp__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(3491);
-/* harmony import */ var sharp__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(sharp__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(6928);
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(path__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(9896);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__nccwpck_require__.n(fs__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(9992);
+const util = __nccwpck_require__(9023);
+const core = __nccwpck_require__(7484);
+const { globSync } = __nccwpck_require__(1363);
+const { requestDiffFiles } = (__nccwpck_require__(6474)["default"]);
+const sharp = __nccwpck_require__(3491);
+const { extname } = __nccwpck_require__(6928);
+const { statSync, writeFileSync } = __nccwpck_require__(9896);
 
-const core = __nccwpck_require__(7484)
-const { globSync } = __nccwpck_require__(1363)
-const { requestDiffFiles } = (__nccwpck_require__(6474)/* ["default"] */ .A)
-;
-
-
-
+const {
+  IGNORE_PATHS,
+  JPEG_QUALITY,
+  JPEG_PROGRESSIVE,
+  PNG_QUALITY,
+  WEBP_QUALITY,
+  COMPRESS_ONLY,
+  EXTENSION_TO_SHARP_FORMAT_MAPPING
+} = __nccwpck_require__(9992);
 
 const config = {
-  jpeg: { quality: _constants__WEBPACK_IMPORTED_MODULE_4__.JPEG_QUALITY, progressive: _constants__WEBPACK_IMPORTED_MODULE_4__.JPEG_PROGRESSIVE },
-  png: { quality: _constants__WEBPACK_IMPORTED_MODULE_4__.PNG_QUALITY },
-  webp: { quality: _constants__WEBPACK_IMPORTED_MODULE_4__.WEBP_QUALITY },
-  ignorePaths: _constants__WEBPACK_IMPORTED_MODULE_4__.IGNORE_PATHS,
-  compressOnly: _constants__WEBPACK_IMPORTED_MODULE_4__.COMPRESS_ONLY
-}
+  jpeg: { quality: JPEG_QUALITY, progressive: JPEG_PROGRESSIVE },
+  png: { quality: PNG_QUALITY },
+  webp: { quality: WEBP_QUALITY },
+  ignorePaths: IGNORE_PATHS,
+  compressOnly: COMPRESS_ONLY
+};
 
 async function compress() {
-  const diffFiles = await requestDiffFiles()
+  const diffFiles = await requestDiffFiles();
   const files = globSync(diffFiles, {
-    ignore: _constants__WEBPACK_IMPORTED_MODULE_4__.IGNORE_PATHS,
+    ignore: IGNORE_PATHS,
     nodir: true,
     follow: false,
     dot: true
-  })
+  });
 
-  let optimisedImages = []
-  let unoptimisedImages = []
+  let optimisedImages = [];
+  let unoptimisedImages = [];
 
   for (const file of files) {
     try {
-      core.info(`file ${file}`)
-      const beforeStat = (0,fs__WEBPACK_IMPORTED_MODULE_3__.statSync)(file).size
-      const extension = (0,path__WEBPACK_IMPORTED_MODULE_2__.extname)(file)
-      const sharpFormat = _constants__WEBPACK_IMPORTED_MODULE_4__.EXTENSION_TO_SHARP_FORMAT_MAPPING[extension]
+      core.info(`file ${file}`);
+      const beforeStat = statSync(file).size;
+      const extension = extname(file);
+      const sharpFormat = EXTENSION_TO_SHARP_FORMAT_MAPPING[extension];
 
-      const { data, info } = await sharp__WEBPACK_IMPORTED_MODULE_1___default()(file)
+      const { data, info } = await sharp(file)
         .toFormat(sharpFormat, config[sharpFormat])
-        .toBuffer({ resolveWithObject: true })
+        .toBuffer({ resolveWithObject: true });
 
-      const name = file.split('/').slice(-2).join('/')
-      const afterStat = info.size
-      const percentChange = (afterStat / beforeStat) * 100 - 100
+      const name = file.split('/').slice(-2).join('/');
+      const afterStat = info.size;
+      const percentChange = (afterStat / beforeStat) * 100 - 100;
 
-      const compressionWasSignificant = percentChange < -1
+      const compressionWasSignificant = percentChange < -1;
 
       const processedImage = {
         name,
@@ -35945,28 +35941,28 @@ async function compress() {
         afterStat,
         percentChange,
         compressionWasSignificant
-      }
+      };
 
       if (compressionWasSignificant) {
-        (0,fs__WEBPACK_IMPORTED_MODULE_3__.writeFileSync)(file, data)
+        writeFileSync(file, data);
 
-        optimisedImages.push(processedImage)
+        optimisedImages.push(processedImage);
       } else {
-        unoptimisedImages.push(processedImage)
+        unoptimisedImages.push(processedImage);
       }
     } catch (error) {
-      core.error(error)
-      core.error(`Error on processing ${file}`)
+      core.error(error);
+      core.error(`Error on processing ${file}`);
     }
   }
 
   return {
     optimisedImages,
     unoptimisedImages
-  }
+  };
 }
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (compress);
+module.exports = compress;
 
 
 /***/ }),
@@ -36032,160 +36028,141 @@ const CONFIG_PATH = path.join(
 /***/ }),
 
 /***/ 4281:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
-__nccwpck_require__.r(__webpack_exports__);
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(9896);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(fs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(9992);
+const { readFileSync } = __nccwpck_require__(9896);
+const { GITHUB_EVENT_PATH } = __nccwpck_require__(9992);
 
+const buffer = readFileSync(GITHUB_EVENT_PATH);
 
-
-const buffer = (0,fs__WEBPACK_IMPORTED_MODULE_0__.readFileSync)(_constants__WEBPACK_IMPORTED_MODULE_1__.GITHUB_EVENT_PATH)
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (JSON.parse(buffer.toString()));
+module.exports = JSON.parse(buffer.toString());
 
 
 /***/ }),
 
 /***/ 6474:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(9896);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(fs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _event__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(4281);
-/* harmony import */ var _octokit__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(2108);
-/* harmony import */ var _octokit__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(_octokit__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(9992);
+const { readFileSync } = __nccwpck_require__(9896);
+const event = __nccwpck_require__(4281);
+const { rest } = __nccwpck_require__(2108);
+const { COMMITER, REPO_DIRECTORY } = __nccwpck_require__(9992);
 
-
-
-
-
-const { number, repository, pull_request } = _event__WEBPACK_IMPORTED_MODULE_1__["default"]
+const { number, repository, pull_request } = event;
 
 async function requestDiffFiles() {
-  const pull_number = number
-  const repo = repository.name
-  const owner = repository.owner.login
+  const pull_number = number;
+  const repo = repository.name;
+  const owner = repository.owner.login;
 
-  const response = await _octokit__WEBPACK_IMPORTED_MODULE_2__.rest.pulls.listFiles({
+  const response = await rest.pulls.listFiles({
     owner,
     repo,
     pull_number,
     mediaType: {
       format: 'text'
     }
-  })
+  });
 
   return response.data
     .filter(file => file.status != 'removed')
-    .map(file => `${_constants__WEBPACK_IMPORTED_MODULE_3__.REPO_DIRECTORY}/**/${file.filename.split('/').slice(-1)}`)
+    .map(file => `${REPO_DIRECTORY}/**/${file.filename.split('/').slice(-1)}`);
 }
 
 async function requestLastCommitInTree() {
-  const repo = repository.name
-  const owner = repository.owner.login
-  const commit_sha = pull_request.head.sha
+  const repo = repository.name;
+  const owner = repository.owner.login;
+  const commit_sha = pull_request.head.sha;
 
-  const response = await _octokit__WEBPACK_IMPORTED_MODULE_2__.rest.git.getCommit({
+  const response = await rest.git.getCommit({
     owner,
     repo,
     commit_sha
-  })
+  });
 
-  return response.data.tree.sha
+  return response.data.tree.sha;
 }
 
 async function requestCreateBlob(image) {
-  const { name, path } = image
-  const encoding = 'base64'
-  const content = (0,fs__WEBPACK_IMPORTED_MODULE_0__.readFileSync)(path, { encoding })
+  const { name, path } = image;
+  const encoding = 'base64';
+  const content = readFileSync(path, { encoding });
 
-  const repo = repository.name
-  const owner = repository.owner.login
+  const repo = repository.name;
+  const owner = repository.owner.login;
 
-  const response = await _octokit__WEBPACK_IMPORTED_MODULE_2__.rest.git.createBlob({
+  const response = await rest.git.createBlob({
     repo,
     owner,
     encoding,
     content
-  })
+  });
 
   return {
     path: name,
     type: 'blob',
     mode: '100644',
     sha: response.data.sha
-  }
+  };
 }
 
 async function requestTree(base_tree, tree) {
-  const repo = repository.name
-  const owner = repository.owner.login
-  const commit_sha = pull_request.head.sha
+  const repo = repository.name;
+  const owner = repository.owner.login;
 
-  const response = await _octokit__WEBPACK_IMPORTED_MODULE_2__.rest.git.createTree({
+  const response = await rest.git.createTree({
     owner,
     repo,
     base_tree,
     tree
-  })
+  });
 
-  return response.data.sha
+  return response.data.sha;
 }
 
 async function requestCommitChanges(message, tree) {
-  const repo = repository.name
-  const owner = repository.owner.login
-  const ref = pull_request.head.sha
+  const repo = repository.name;
+  const owner = repository.owner.login;
+  const ref = pull_request.head.sha;
 
-  const response = await _octokit__WEBPACK_IMPORTED_MODULE_2__.rest.git.createCommit({
+  const response = await rest.git.createCommit({
     repo,
     owner,
     message,
     tree,
     parents: [ref],
-    committer: _constants__WEBPACK_IMPORTED_MODULE_3__.COMMITER
-  })
+    committer: COMMITER
+  });
 
-  return response.data
+  return response.data;
 }
 
 async function requestUpdateRef(sha) {
-  const repo = repository.name
-  const owner = repository.owner.login
-  const ref = pull_request.head.ref
+  const repo = repository.name;
+  const owner = repository.owner.login;
+  const ref = pull_request.head.ref;
 
-  await _octokit__WEBPACK_IMPORTED_MODULE_2__.rest.git.updateRef({
+  await rest.git.updateRef({
     owner,
     repo,
     ref,
     sha
-  })
+  });
 }
 
 async function requestComment(body) {
-  const repo = repository.name
-  const owner = repository.owner.login
+  const repo = repository.name;
+  const owner = repository.owner.login;
 
-  _octokit__WEBPACK_IMPORTED_MODULE_2__.rest.issues.createComment({
+  rest.issues.createComment({
     owner,
     repo,
     issue_number: number,
     body
-  })
+  });
 }
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+module.exports = {
   requestDiffFiles,
   requestLastCommitInTree,
   requestCreateBlob,
@@ -36193,7 +36170,7 @@ async function requestComment(body) {
   requestCommitChanges,
   requestUpdateRef,
   requestComment
-});
+};
 
 
 /***/ }),
@@ -36203,7 +36180,7 @@ async function requestComment(body) {
 
 const core = __nccwpck_require__(7484)
 const { wait } = __nccwpck_require__(8644)
-const compress = (__nccwpck_require__(5629)/* ["default"] */ .A)
+const compress = (__nccwpck_require__(5629)["default"])
 const {
   requestCommitChanges,
   requestLastCommitInTree,
@@ -36211,7 +36188,7 @@ const {
   requestCreateBlob,
   requestUpdateRef,
   requestComment
-} = (__nccwpck_require__(6474)/* ["default"] */ .A)
+} = (__nccwpck_require__(6474)["default"])
 const generateMarkdownReport = __nccwpck_require__(9275)
 
 /**
@@ -51979,18 +51956,6 @@ module.exports = /*#__PURE__*/JSON.parse('{"name":"sharp","description":"High pe
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
