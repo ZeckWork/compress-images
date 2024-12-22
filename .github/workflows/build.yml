@@ -44,7 +44,7 @@ jobs:
       run: |
          git config --global user.name "ZeckWork"
          git config --global user.email "actions@github.com"
-         git remote set-url origin https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/ZeckWork/compress-images.git
+         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ZeckWork/compress-images.git
 
     # Publicar a Action
     - name: Publish Action
