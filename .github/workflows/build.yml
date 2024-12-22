@@ -1,0 +1,46 @@
+name: Build and Release Action
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout do código
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Configurar Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    # Instalar dependências do sistema necessárias para o Sharp
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev librsvg2-dev
+
+    # Instalar o Sharp com arquitetura correta
+    - name: Install Sharp for Linux x64
+      run: npm install --os=linux --cpu=x64 sharp
+
+    # Build usando @vercel/ncc
+    - name: Build action
+      run: |
+        npm install
+        npx @vercel/ncc build src/index.js -o dist
+
+    # Publicar a Action
+    - name: Publish Action
+      run: |
+        git config user.name "github-actions"
+        git config user.email "actions@github.com"
+        git add .
+        git commit -m "Build action"
+        git push origin main
