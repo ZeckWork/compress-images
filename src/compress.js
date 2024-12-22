@@ -1,11 +1,12 @@
-import util from 'util'
-const core = require('@actions/core')
-const { globSync } = require('glob')
-const { requestDiffFiles } = require('./github').default
-import sharp from 'sharp'
-import { extname } from 'path'
-import { statSync, writeFileSync } from 'fs'
-import {
+const util = require('util');
+const core = require('@actions/core');
+const { globSync } = require('glob');
+const { requestDiffFiles } = require('./github').default;
+const sharp = require('sharp');
+const { extname } = require('path');
+const { statSync, writeFileSync } = require('fs');
+
+const {
   IGNORE_PATHS,
   JPEG_QUALITY,
   JPEG_PROGRESSIVE,
@@ -13,7 +14,7 @@ import {
   WEBP_QUALITY,
   COMPRESS_ONLY,
   EXTENSION_TO_SHARP_FORMAT_MAPPING
-} from './constants'
+} = require('./constants');
 
 const config = {
   jpeg: { quality: JPEG_QUALITY, progressive: JPEG_PROGRESSIVE },
@@ -21,36 +22,36 @@ const config = {
   webp: { quality: WEBP_QUALITY },
   ignorePaths: IGNORE_PATHS,
   compressOnly: COMPRESS_ONLY
-}
+};
 
 async function compress() {
-  const diffFiles = await requestDiffFiles()
+  const diffFiles = await requestDiffFiles();
   const files = globSync(diffFiles, {
     ignore: IGNORE_PATHS,
     nodir: true,
     follow: false,
     dot: true
-  })
+  });
 
-  let optimisedImages = []
-  let unoptimisedImages = []
+  let optimisedImages = [];
+  let unoptimisedImages = [];
 
   for (const file of files) {
     try {
-      core.info(`file ${file}`)
-      const beforeStat = statSync(file).size
-      const extension = extname(file)
-      const sharpFormat = EXTENSION_TO_SHARP_FORMAT_MAPPING[extension]
+      core.info(`file ${file}`);
+      const beforeStat = statSync(file).size;
+      const extension = extname(file);
+      const sharpFormat = EXTENSION_TO_SHARP_FORMAT_MAPPING[extension];
 
       const { data, info } = await sharp(file)
         .toFormat(sharpFormat, config[sharpFormat])
-        .toBuffer({ resolveWithObject: true })
+        .toBuffer({ resolveWithObject: true });
 
-      const name = file.split('/').slice(-2).join('/')
-      const afterStat = info.size
-      const percentChange = (afterStat / beforeStat) * 100 - 100
+      const name = file.split('/').slice(-2).join('/');
+      const afterStat = info.size;
+      const percentChange = (afterStat / beforeStat) * 100 - 100;
 
-      const compressionWasSignificant = percentChange < -1
+      const compressionWasSignificant = percentChange < -1;
 
       const processedImage = {
         name,
@@ -60,25 +61,25 @@ async function compress() {
         afterStat,
         percentChange,
         compressionWasSignificant
-      }
+      };
 
       if (compressionWasSignificant) {
-        writeFileSync(file, data)
+        writeFileSync(file, data);
 
-        optimisedImages.push(processedImage)
+        optimisedImages.push(processedImage);
       } else {
-        unoptimisedImages.push(processedImage)
+        unoptimisedImages.push(processedImage);
       }
     } catch (error) {
-      core.error(error)
-      core.error(`Error on processing ${file}`)
+      core.error(error);
+      core.error(`Error on processing ${file}`);
     }
   }
 
   return {
     optimisedImages,
     unoptimisedImages
-  }
+  };
 }
 
-export default compress
+module.exports = compress;
