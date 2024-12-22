@@ -1,7 +1,7 @@
 const util = require('util');
 const core = require('@actions/core');
 const { globSync } = require('glob');
-const { requestDiffFiles } = require('./github').default;
+const { requestDiffFiles } = require('./github');
 const sharp = require('sharp');
 const { extname } = require('path');
 const { statSync, writeFileSync } = require('fs');
