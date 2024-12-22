@@ -4,8 +4,12 @@
   "version": "1.0.0",
   "author": "me@zeck.work",
   "private": true,
-  "os": ["linux"],
-  "cpu": ["x64"],
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
   "homepage": "https://github.com/actions/javascript-action#readme",
   "repository": {
     "type": "git",

@@ -1,14 +1,14 @@
-const { readFileSync } = require('fs');
-const event = require('./event');
-const { rest } = require('./octokit');
-const { COMMITER, REPO_DIRECTORY } = require('./constants');
+const { readFileSync } = require('fs')
+const event = require('./event')
+const { rest } = require('./octokit')
+const { COMMITER, REPO_DIRECTORY } = require('./constants')
 
-const { number, repository, pull_request } = event;
+const { number, repository, pull_request } = event
 
 async function requestDiffFiles() {
-  const pull_number = number;
-  const repo = repository.name;
-  const owner = repository.owner.login;
+  const pull_number = number
+  const repo = repository.name
+  const owner = repository.owner.login
 
   const response = await rest.pulls.listFiles({
     owner,
@@ -17,68 +17,68 @@ async function requestDiffFiles() {
     mediaType: {
       format: 'text'
     }
-  });
+  })
 
   return response.data
     .filter(file => file.status != 'removed')
-    .map(file => `${REPO_DIRECTORY}/**/${file.filename.split('/').slice(-1)}`);
+    .map(file => `${REPO_DIRECTORY}/**/${file.filename.split('/').slice(-1)}`)
 }
 
 async function requestLastCommitInTree() {
-  const repo = repository.name;
-  const owner = repository.owner.login;
-  const commit_sha = pull_request.head.sha;
+  const repo = repository.name
+  const owner = repository.owner.login
+  const commit_sha = pull_request.head.sha
 
   const response = await rest.git.getCommit({
     owner,
     repo,
     commit_sha
-  });
+  })
 
-  return response.data.tree.sha;
+  return response.data.tree.sha
 }
 
 async function requestCreateBlob(image) {
-  const { name, path } = image;
-  const encoding = 'base64';
-  const content = readFileSync(path, { encoding });
+  const { name, path } = image
+  const encoding = 'base64'
+  const content = readFileSync(path, { encoding })
 
-  const repo = repository.name;
-  const owner = repository.owner.login;
+  const repo = repository.name
+  const owner = repository.owner.login
 
   const response = await rest.git.createBlob({
     repo,
     owner,
     encoding,
     content
-  });
+  })
 
   return {
     path: name,
     type: 'blob',
     mode: '100644',
     sha: response.data.sha
-  };
+  }
 }
 
 async function requestTree(base_tree, tree) {
-  const repo = repository.name;
-  const owner = repository.owner.login;
+  const repo = repository.name
+  const owner = repository.owner.login
 
   const response = await rest.git.createTree({
     owner,
     repo,
     base_tree,
     tree
-  });
+  })
 
-  return response.data.sha;
+  return response.data.sha
 }
 
 async function requestCommitChanges(message, tree) {
-  const repo = repository.name;
-  const owner = repository.owner.login;
-  const ref = pull_request.head.sha;
+  const repo = repository.name
+  const owner = repository.owner.login
+  const ref = pull_request.head.sha
 
   const response = await rest.git.createCommit({
     repo,
@@ -87,34 +87,34 @@ async function requestCommitChanges(message, tree) {
     tree,
     parents: [ref],
     committer: COMMITER
-  });
+  })
 
-  return response.data;
+  return response.data
 }
 
 async function requestUpdateRef(sha) {
-  const repo = repository.name;
-  const owner = repository.owner.login;
-  const ref = pull_request.head.ref;
+  const repo = repository.name
+  const owner = repository.owner.login
+  const ref = pull_request.head.ref
 
   await rest.git.updateRef({
     owner,
     repo,
     ref,
     sha
-  });
+  })
 }
 
 async function requestComment(body) {
-  const repo = repository.name;
-  const owner = repository.owner.login;
+  const repo = repository.name
+  const owner = repository.owner.login
 
   rest.issues.createComment({
     owner,
     repo,
     issue_number: number,
     body
-  });
+  })
 }
 
 module.exports = {
@@ -125,4 +125,4 @@ module.exports = {
   requestCommitChanges,
   requestUpdateRef,
   requestComment
-};
+}
